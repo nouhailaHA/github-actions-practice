@@ -1,33 +1,38 @@
-name: CI/CD Azure Node App
+name: Build and Deploy Container to Azure
 
 on:
   push:
-    branches: [ "main" ]
-
-env:
-  AZURE_WEBAPP_NAME: ${{ secrets.AZURE_WEBAPP_NAME }}
+    branches:
+      - main
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4
+    - name: Checkout
+      uses: actions/checkout@v3
 
-    - name: Setup Node
-      uses: actions/setup-node@v4
+    - name: Login to Azure
+      uses: azure/login@v1
       with:
-        node-version: '20'
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-    - name: Install dependencies
-      run: npm install
+    - name: Login to ACR
+      run: |
+        echo ${{ secrets.ACR_PASSWORD }} | docker login ${{ secrets.ACR_LOGIN_SERVER }} \
+        -u ${{ secrets.ACR_USERNAME }} --password-stdin
 
-    - name: Zip app
-      run: zip -r app.zip .
+    - name: Build image
+      run: |
+        docker build -t ${{ secrets.ACR_LOGIN_SERVER }}/node-app:latest .
 
-    - name: Deploy to Azure
-      uses: azure/webapps-deploy@v2
+    - name: Push image
+      run: |
+        docker push ${{ secrets.ACR_LOGIN_SERVER }}/node-app:latest
+
+    - name: Deploy to Azure Web App
+      uses: azure/webapps-deploy@v3
       with:
-        app-name: ${{ env.AZURE_WEBAPP_NAME }}
-        publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
-        package: app.zip
+        app-name: ${{ secrets.AZURE_WEBAPP_NAME }}
+        images: ${{ secrets.ACR_LOGIN_SERVER }}/node-app:latest
