@@ -23,7 +23,6 @@ app.get("/", (req, res) => {
         data = { count: 0, visitors: [] };
     }
 
-    // Infos visiteur
     const visitor = {
         ip: req.ip,
         date: new Date().toLocaleString(),
@@ -33,15 +32,14 @@ app.get("/", (req, res) => {
     data.count += 1;
     data.visitors.push(visitor);
 
-    // garder seulement les 10 derniers visiteurs
     if (data.visitors.length > 10) {
         data.visitors = data.visitors.slice(-10);
     }
 
     fs.writeFileSync(FILE, JSON.stringify(data, null, 2));
 
-    // HTML stylé
-    res.send(`
+    // IMPORTANT: utiliser une variable pour éviter erreurs template
+    const html = `
     <html>
     <head>
         <title>Dashboard Visites</title>
@@ -65,6 +63,10 @@ app.get("/", (req, res) => {
             h1 {
                 font-size: 40px;
             }
+            .info {
+                text-align: left;
+                font-size: 16px;
+            }
             ul {
                 list-style: none;
                 padding: 0;
@@ -85,21 +87,30 @@ app.get("/", (req, res) => {
     </head>
     <body>
 
-        <h1>📊 Dashboard des visites</h1>
+        <h1>Dashboard des visites</h1>
+
+        <div class="card info">
+            <h2>Informations du projet</h2>
+            <p><strong>Nom :</strong> Nouhaila Hafdane</p>
+            <p><strong>Master :</strong> Genie Logiciel pour le Cloud Computing</p>
+            <p><strong>Module :</strong> DevOps</p>
+            <p><strong>Professeur :</strong> Dr Abderrahmane Laraqui</p>
+            <p><strong>Projet :</strong> Application Node.js avec CI/CD sur Azure</p>
+        </div>
 
         <div class="card">
-            <h2>👥 Nombre total de visites</h2>
+            <h2>Nombre total de visites</h2>
             <p style="font-size:30px;">${data.count}</p>
         </div>
 
         <div class="card">
-            <h2>🕒 Derniers visiteurs</h2>
+            <h2>Derniers visiteurs</h2>
             <ul>
                 ${data.visitors.map(v => `
                     <li>
                         <div class="ip">IP : ${v.ip}</div>
                         <div class="date">${v.date}</div>
-                        <div>🖥️ ${v.userAgent}</div>
+                        <div>${v.userAgent}</div>
                     </li>
                 `).join("")}
             </ul>
@@ -107,9 +118,11 @@ app.get("/", (req, res) => {
 
     </body>
     </html>
-    `);
+    `;
+
+    res.send(html);
 });
 
 app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
+    console.log("Server running on port " + PORT);
 });
