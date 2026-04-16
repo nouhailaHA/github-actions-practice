@@ -1,11 +1,6 @@
 {
-  "count": 16,
+  "count": 17,
   "visitors": [
-    {
-      "ip": "::1",
-      "date": "16/04/2026 21:22:22",
-      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36"
-    },
     {
       "ip": "::1",
       "date": "16/04/2026 21:22:27",
@@ -49,6 +44,11 @@
     {
       "ip": "::1",
       "date": "16/04/2026 22:12:26",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36"
+    },
+    {
+      "ip": "127.0.0.1",
+      "date": "16/04/2026 23:20:33",
       "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36"
     }
   ]
