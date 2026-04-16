@@ -4,7 +4,8 @@ const fs = require("fs");
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-const FILE = "counter.json";
+const path = require("path");
+const FILE = path.join(__dirname, "counter.json");
 
 // Initialisation
 if (!fs.existsSync(FILE)) {
