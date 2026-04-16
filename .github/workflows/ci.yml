@@ -1,17 +1,20 @@
-name: CI/CD Node App
+name: CI/CD Azure Node App
 
 on:
   push:
     branches: [ "main" ]
 
+env:
+  AZURE_WEBAPP_NAME: ${{ secrets.AZURE_WEBAPP_NAME }}
+
 jobs:
-  build:
+  build-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
     - uses: actions/checkout@v4
 
-    - name: Setup Node.js
+    - name: Setup Node
       uses: actions/setup-node@v4
       with:
         node-version: '20'
@@ -19,8 +22,12 @@ jobs:
     - name: Install dependencies
       run: npm install
 
-    - name: Run app test
-      run: node app.js & sleep 5
+    - name: Zip app
+      run: zip -r app.zip .
 
-    - name: Check server response
-      run: curl http://localhost:3000
+    - name: Deploy to Azure
+      uses: azure/webapps-deploy@v2
+      with:
+        app-name: ${{ env.AZURE_WEBAPP_NAME }}
+        publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+        package: app.zip
